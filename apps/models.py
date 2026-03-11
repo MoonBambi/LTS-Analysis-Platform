@@ -67,5 +67,11 @@ class LandNewsAnalysis(db.Model):
     __tablename__ = 'land_news_analysis'
 
     id              = db.Column(db.Integer, primary_key=True)
+    url             = db.Column(db.String(500), nullable=True)
+    title           = db.Column(db.String(500), nullable=True)
     publish_date    = db.Column(db.Date, nullable=True)
+    source          = db.Column(db.String(100), nullable=True)
+    content_summary = db.Column(db.Text, nullable=True)
     sentiment_score = db.Column(db.Numeric(4, 3), nullable=True)
+    keywords        = db.Column(db.Text, nullable=True)
+    created_at      = db.Column(db.DateTime, nullable=True)

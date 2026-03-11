@@ -209,8 +209,19 @@ def index():
             kpis['hot_topics'] = hot_topics
     except Exception:
         pass
+    latest_news = []
+    try:
+        latest_news = (
+            LandNewsAnalysis.query
+            .filter(LandNewsAnalysis.publish_date.isnot(None))
+            .order_by(LandNewsAnalysis.publish_date.desc(), LandNewsAnalysis.id.desc())
+            .limit(10)
+            .all()
+        )
+    except Exception:
+        latest_news = []
 
-    return render_template('pages/index.html', segment='index', kpis=kpis)
+    return render_template('pages/index.html', segment='index', kpis=kpis, latest_news=latest_news)
 
 @blueprint.route('/icon_feather')
 def icon_feather():

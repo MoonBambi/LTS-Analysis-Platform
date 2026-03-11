@@ -550,3 +550,71 @@ widgetChart.render();
         new ApexCharts(hotTopicsEl, hotTopicsOptions).render();
     }
 })();
+
+(function () {
+    var pieEl = document.getElementById('news-source-pie');
+    if (!pieEl) {
+        return;
+    }
+    if (!window.echarts) {
+        pieEl.textContent = 'ECharts 未加载';
+        return;
+    }
+
+    var pieChart = echarts.init(pieEl);
+    pieChart.setOption({
+        tooltip: {
+            trigger: 'item'
+        },
+        legend: {
+            top: '5%',
+            left: 'center'
+        },
+        series: [{
+                name: '来源',
+                type: 'pie',
+                radius: ['40%', '70%'],
+                avoidLabelOverlap: false,
+                itemStyle: {
+                    borderRadius: 10,
+                    borderColor: '#fff',
+                    borderWidth: 2
+                },
+                label: {
+                    show: false,
+                    position: 'center'
+                },
+                emphasis: {
+                    label: {
+                        show: true,
+                        fontSize: 24,
+                        fontWeight: 'bold',
+                        formatter: function (params) {
+                            var pct = (params && typeof params.percent === 'number') ? Math.round(params.percent) : null;
+                            return (params && params.name ? params.name : '') + '\n' + (pct == null ? '-' : (pct + '%'));
+                        }
+                    }
+                },
+                labelLine: {
+                    show: false
+                },
+                data: [{
+                        value: 6980,
+                        name: '中国农业农村信息网'
+                    },
+                    {
+                        value: 4021,
+                        name: '中国日报网'
+                    },
+                    {
+                        value: 104,
+                        name: '农业农村部'
+                    }
+                ]
+            }]
+    });
+
+    window.addEventListener('resize', function () {
+        pieChart.resize();
+    });
+})();
