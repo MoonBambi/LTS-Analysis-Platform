@@ -209,6 +209,18 @@ def index():
             kpis['hot_topics'] = hot_topics
     except Exception:
         pass
+
+    word_frequency_top = []
+    try:
+        latest_created_at = db.session.query(db.func.max(WordFrequencyStat.created_at)).scalar()
+        query = WordFrequencyStat.query
+        if latest_created_at:
+            query = query.filter(WordFrequencyStat.created_at == latest_created_at)
+
+        rows = query.order_by(WordFrequencyStat.count.desc()).limit(20).all()
+        word_frequency_top = [{'word': row.word, 'count': int(row.count or 0)} for row in rows]
+    except Exception:
+        word_frequency_top = []
     latest_news = []
     try:
         latest_news = (
@@ -221,7 +233,7 @@ def index():
     except Exception:
         latest_news = []
 
-    return render_template('pages/index.html', segment='index', kpis=kpis, latest_news=latest_news)
+    return render_template('pages/index.html', segment='index', kpis=kpis, latest_news=latest_news, word_frequency_top=word_frequency_top)
 
 @blueprint.route('/icon_feather')
 def icon_feather():

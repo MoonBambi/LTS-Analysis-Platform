@@ -96,36 +96,12 @@
                         <i class="feather icon-chevron-right"></i>
                     </button>
                 </div>
-                <div class="card-body" style="padding:0 25px;">
+                <div class="card-body" style="padding:0 25px 25px 25px;">
                     <div class="earning-text mb-0">
                         <h3 class="mb-2 text-white f-w-300">情感得分趋势</h3>
                         <span class="text-white d-block" id="sentiment-year-avg">-</span>
                     </div>
-                    <div id="Widget-line-chart" class="WidgetlineChart2 ChartShadow" style="height:180px;"></div>
-                </div>
-            </div>
-            <div class="card">
-                <div class="card-body border-bottom">
-                    <div class="row d-flex align-items-center">
-                        <div class="col-auto">
-                            <i class="feather icon-zap f-30 text-success"></i>
-                        </div>
-                        <div class="col">
-                            <h3 class="f-w-300">235</h3>
-                            <span class="d-block text-uppercase">TOTAL IDEAS</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="card-body">
-                    <div class="row d-flex align-items-center">
-                        <div class="col-auto">
-                            <i class="feather icon-map-pin f-30 text-primary"></i>
-                        </div>
-                        <div class="col">
-                            <h3 class="f-w-300">26</h3>
-                            <span class="d-block text-uppercase">TOTAL LOCATIONS</span>
-                        </div>
-                    </div>
+                    <div id="Widget-line-chart" class="WidgetlineChart2 ChartShadow" style="height:360px;"></div>
                 </div>
             </div>
         </div>
@@ -141,34 +117,13 @@
                 </div>
             </div>
         </div>
-        <div class="col-md-6 col-xl-4">
+        <div class="col-md-6 col-xl-8">
             <div class="card card-social">
                 <div class="card-body border-bottom">
-                    <div class="row align-items-center justify-content-center">
-                        <div class="col-auto">
-                            <i class="fab fa-google-plus-g text-danger f-36"></i>
-                        </div>
-                        <div class="col text-end">
-                            <h3>10,500</h3>
-                            <h5 class="text-primary mb-0">+5.9% <span class="text-muted">Total Likes</span></h5>
-                        </div>
-                    </div>
+                    <h5 class="mb-0">高频词 Top20</h5>
                 </div>
                 <div class="card-body">
-                    <div class="row align-items-center justify-content-center card-active">
-                        <div class="col-6">
-                            <h6 class="text-center m-b-10"><span class="text-muted m-r-5">Target:</span>25,998</h6>
-                            <div class="progress">
-                                <div class="progress-bar bg-brand-color-1" role="progressbar" style="width:80%;height:6px;" aria-valuenow="80" aria-valuemin="0" aria-valuemax="100"></div>
-                            </div>
-                        </div>
-                        <div class="col-6">
-                            <h6 class="text-center  m-b-10"><span class="text-muted m-r-5">Duration:</span>7,753</h6>
-                            <div class="progress">
-                                <div class="progress-bar bg-brand-color-2" role="progressbar" style="width:50%;height:6px;" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div>
-                            </div>
-                        </div>
-                    </div>
+                    <div id="word-frequency-bar" style="height:230px;"></div>
                 </div>
             </div>
         </div>
@@ -223,6 +178,7 @@
 {% block extra_js %}
 
 <script id="dashboard-kpis" type="application/json">{{ kpis | tojson | safe }}</script>
+<script id="word-frequency-top" type="application/json">{{ word_frequency_top | tojson | safe }}</script>
 <script>
   (function () {
     var el = document.getElementById('dashboard-kpis');
@@ -238,5 +194,37 @@
 <script src="{{ url_for('static', filename='assets/js/plugins/jsvectormap.min.js') }}"></script>
 <script src="{{ url_for('static', filename='assets/js/plugins/world.js') }}"></script>
 <script src="{{ url_for('static', filename='assets/js/pages/dashboard-default.js') }}"></script>
+<script>
+  (function () {
+    var dataEl = document.getElementById('word-frequency-top');
+    var container = document.getElementById('word-frequency-bar');
+    if (!dataEl || !container || !window.echarts) return;
+
+    var rows;
+    try {
+      rows = JSON.parse(dataEl.textContent || '[]') || [];
+    } catch (e) {
+      rows = [];
+    }
+
+    if (!rows.length) return;
+
+    var categories = rows.map(function (r) { return (r && r.word) ? String(r.word) : '-'; });
+    var values = rows.map(function (r) { return (r && typeof r.count === 'number') ? r.count : 0; });
+
+    var chart = window.echarts.init(container);
+    chart.setOption({
+      tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
+      grid: { left: 40, right: 10, top: 10, bottom: 45 },
+      xAxis: { type: 'category', data: categories, axisLabel: { interval: 0, rotate: 45, hideOverlap: true } },
+      yAxis: { type: 'value' },
+      series: [{ type: 'bar', data: values, barMaxWidth: 22 }]
+    });
+
+    window.addEventListener('resize', function () {
+      chart.resize();
+    });
+  })();
+</script>
 
 {% endblock extra_js %}

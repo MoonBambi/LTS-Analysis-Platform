@@ -105,7 +105,7 @@ var initialSeries = seriesToPercent(initialRaw);
 var options = {
     chart: {
         type: 'line',
-        height: 210,
+        height: 260,
         zoom: {
             enabled: false
         },
