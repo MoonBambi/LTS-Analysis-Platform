@@ -42,6 +42,25 @@ with app.app_context():
 
         print('> Fallback to SQLite ')
         db.create_all()
+    
+    from apps.authentication.models import Users
+    from apps.authentication.util import hash_pass, verify_pass
+
+    default_username = 'test'
+    default_password = 'pass'
+    default_email = 'test@example.com'
+
+    user = Users.find_by_username(default_username)
+    if not user:
+        user = Users(username=default_username, email=default_email, password=default_password)
+        db.session.add(user)
+        db.session.commit()
+    else:
+        if user.password and not verify_pass(default_password, user.password):
+            user.password = hash_pass(default_password)
+            if not user.email:
+                user.email = default_email
+            db.session.commit()
 
 # Apply all changes
 Migrate(app, db)

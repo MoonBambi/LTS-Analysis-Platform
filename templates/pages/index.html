@@ -28,78 +28,57 @@
       <!-- [ breadcrumb ] end -->
       <!-- [ Main Content ] start -->
       <div class="row">
-        <!-- [ daily sales section ] start -->
         <div class="col-md-6 col-xl-4">
             <div class="card">
-                <div class="card-body">
-                    <h6 class="mb-4">Daily Sales</h6>
-                    <div class="row d-flex align-items-center">
-                        <div class="col-9">
-                            <h3 class="f-w-300 d-flex align-items-center m-b-0"><i class="feather icon-arrow-up text-success f-30 m-r-10"></i>$249.95</h3>
-                        </div>
-
-                        <div class="col-3 text-end">
-                            <p class="m-b-0">67%</p>
-                        </div>
+                <div class="card-body" style="position: relative; overflow: hidden;">
+                    <div style="position: absolute; inset: 0; opacity: 0.20; pointer-events: none;">
+                        <div id="kpi-total-news-area" style="height: 100%;"></div>
                     </div>
-                    <div class="progress m-t-30" style="height: 7px;">
-                        <div class="progress-bar bg-brand-color-1" role="progressbar" style="width: 50%;" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div>
+                    <h6 class="mb-2">新闻采集总量</h6>
+                    <div class="d-flex align-items-end justify-content-between">
+                        <h2 class="mb-0" style="position: relative; z-index: 1;">{{ "{:,}".format(kpis.total_news) }}</h2>
+                        <span class="text-muted" style="position: relative; z-index: 1;">近 7 天</span>
                     </div>
                 </div>
             </div>
         </div>
-        <!-- [ daily sales section ] end -->
 
-        <!-- [ Monthly  sales section ] start -->
         <div class="col-md-6 col-xl-4">
             <div class="card">
                 <div class="card-body">
-                    <h6 class="mb-4">Monthly Sales</h6>
-                    <div class="row d-flex align-items-center">
-                        <div class="col-9">
-                            <h3 class="f-w-300 d-flex align-items-center  m-b-0"><i class="feather icon-arrow-down text-danger f-30 m-r-10"></i>$2.942.32</h3>
-                        </div>
-                        <div class="col-3 text-end">
-                            <p class="m-b-0">36%</p>
-                        </div>
-                    </div>
-                    <div class="progress m-t-30" style="height: 7px;">
-                        <div class="progress-bar bg-brand-color-2" role="progressbar" style="width: 35%;" aria-valuenow="35" aria-valuemin="0" aria-valuemax="100"></div>
+                    <h6 class="mb-2">全库平均情感得分</h6>
+                    <div class="d-flex align-items-center justify-content-between">
+                        <h2 class="mb-0">{{ (kpis.global_sentiment * 100) | round(0) | int }}%</h2>
+                        <div id="kpi-sentiment-gauge" style="width: 160px; height: 120px;"></div>
                     </div>
                 </div>
             </div>
         </div>
-        <!-- [ Monthly  sales section ] end -->
 
-        <!-- [ year  sales section ] start -->
         <div class="col-md-12 col-xl-4">
             <div class="card">
                 <div class="card-body">
-                    <h6 class="mb-4">Yearly Sales</h6>
-                    <div class="row d-flex align-items-center">
-                        <div class="col-9">
-                            <h3 class="f-w-300 d-flex align-items-center  m-b-0"><i class="feather icon-arrow-up text-success f-30 m-r-10"></i>$8.638.32</h3>
+                    <h6 class="mb-2">核心关键词密度</h6>
+                    <div class="d-flex align-items-end justify-content-between">
+                        <div>
+                            <h4 class="mb-0">{{ kpis.hot_topics[0].keyword }}</h4>
+                            <span class="text-muted">{{ "{:,}".format(kpis.hot_topics[0].count) }} 次</span>
                         </div>
-                        <div class="col-3 text-end">
-                            <p class="m-b-0">80%</p>
-                        </div>
+                        <div class="text-muted">Top 3</div>
                     </div>
-                    <div class="progress m-t-30" style="height: 7px;">
-                        <div class="progress-bar bg-brand-color-1" role="progressbar" style="width: 70%;" aria-valuenow="70" aria-valuemin="0" aria-valuemax="100"></div>
-                    </div>
+                    <div id="kpi-hot-topics-bar" style="height: 120px;"></div>
                 </div>
             </div>
         </div>
-        <!-- [ year  sales section ] end -->
 
         <!-- [ worldLow section ] start -->
         <div class="col-xl-8 col-md-6">
             <div class="card">
                 <div class="card-header">
-                    <h5>Users From United States</h5>
+                    <h5>情感得分热力图</h5>
                 </div>
                 <div class="card-body">
-                    <div id="world-low" style="height:450px;"></div>
+                    <div id="sentiment-heatmap" style="height:450px;"></div>
                 </div>
             </div>
         </div>
@@ -108,13 +87,19 @@
         <!-- [ statistics year chart ] start -->
         <div class="col-xl-4 col-md-6">
             <div class="card bg-primary">
-                <div class="card-header border-0">
-                    <h5 class="text-white">Earnings</h5>
+                <div class="card-header border-0 d-flex align-items-center justify-content-between">
+                    <button type="button" class="btn btn-sm btn-outline-light px-2 py-1" id="sentiment-year-prev" aria-label="上一年">
+                        <i class="feather icon-chevron-left"></i>
+                    </button>
+                    <h5 class="text-white mb-0" id="sentiment-year-label">-</h5>
+                    <button type="button" class="btn btn-sm btn-outline-light px-2 py-1" id="sentiment-year-next" aria-label="下一年">
+                        <i class="feather icon-chevron-right"></i>
+                    </button>
                 </div>
                 <div class="card-body" style="padding:0 25px;">
                     <div class="earning-text mb-0">
-                        <h3 class="mb-2 text-white f-w-300">$4295.36 <i class="feather icon-arrow-up teal accent-3"></i></h3>
-                        <span class="text-uppercase text-white d-block">Total Earnings</span>
+                        <h3 class="mb-2 text-white f-w-300">情感得分趋势</h3>
+                        <span class="text-white d-block" id="sentiment-year-avg">-</span>
                     </div>
                     <div id="Widget-line-chart" class="WidgetlineChart2 ChartShadow" style="height:180px;"></div>
                 </div>
@@ -380,7 +365,19 @@
 
 {% block extra_js %}
 
+<script id="dashboard-kpis" type="application/json">{{ kpis | tojson | safe }}</script>
+<script>
+  (function () {
+    var el = document.getElementById('dashboard-kpis');
+    try {
+      window.dashboardKpis = el ? JSON.parse(el.textContent || 'null') : null;
+    } catch (e) {
+      window.dashboardKpis = null;
+    }
+  })();
+</script>
 <script src="{{ url_for('static', filename='assets/js/plugins/apexcharts.min.js') }}"></script>
+<script src="{{ url_for('static', filename='assets/js/plugins/echarts.min.js') }}"></script>
 <script src="{{ url_for('static', filename='assets/js/plugins/jsvectormap.min.js') }}"></script>
 <script src="{{ url_for('static', filename='assets/js/plugins/world.js') }}"></script>
 <script src="{{ url_for('static', filename='assets/js/pages/dashboard-default.js') }}"></script>

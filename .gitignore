@@ -15,6 +15,7 @@ __pycache__/
 env
 env_linux
 venv
+.venv
 
 # other
 .DS_Store
@@ -37,3 +38,5 @@ apps/static/assets/.temp
 
 node_modules/
 yarn.lock
+.idea/
+.vscode/

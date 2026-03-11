@@ -50,3 +50,22 @@ class Product(db.Model):
             error = str(e.__dict__['orig'])
             raise InvalidUsage(error, 422)
         return
+
+
+class WordFrequencyStat(db.Model):
+
+    __tablename__ = 'word_frequency_stats'
+
+    id         = db.Column(db.Integer, primary_key=True)
+    word       = db.Column(db.String(200), nullable=False)
+    count      = db.Column('count', db.Integer, nullable=False)
+    created_at = db.Column(db.DateTime, nullable=True)
+
+
+class LandNewsAnalysis(db.Model):
+
+    __tablename__ = 'land_news_analysis'
+
+    id              = db.Column(db.Integer, primary_key=True)
+    publish_date    = db.Column(db.Date, nullable=True)
+    sentiment_score = db.Column(db.Numeric(4, 3), nullable=True)
